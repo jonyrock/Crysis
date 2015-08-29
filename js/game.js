@@ -1,39 +1,49 @@
 Game = function () {
     
-    
+    var WIDTH = 800;
+    var HEIGHT = 800;
+
     Game.prototype.start = function() {
         
     };
     
     function Game(viewport) {
         var renderer = new THREE.WebGLRenderer();
-        alert($(viewport).width());
         renderer.setSize($(viewport).width(), $(viewport).height());
         $(viewport).append( renderer.domElement );
 
         var scene = new THREE.Scene();
+        
+        var camera = new THREE.OrthographicCamera(0, WIDTH, 0, HEIGHT);
 
-        var camera = new THREE.PerspectiveCamera(
-            35,         // Field of view
-            $(viewport).width() / $(viewport).height(),  // Aspect ratio
-            .1,         // Near
-            10000       // Far
-        );
-        camera.position.set( -15, 10, 15 );
-        camera.lookAt(scene.position);
-
-        var geometry = new THREE.BoxGeometry( 5, 5, 5 );
+        var geometry = new THREE.BoxGeometry( 50, 50, 50 );
         var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
-        var mesh = new THREE.Mesh( geometry, material );
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(30, HEIGHT / 2, -1);
         scene.add( mesh );
 
         var light = new THREE.PointLight( 0xFFFF00 );
-        light.position.set( 10, 0, 10 );
+        light.position.set( 10, 20, -200 );
         scene.add( light );
+
+
+        var map = THREE.ImageUtils.loadTexture("../assets/img/pers.png");
+        var material = new THREE.SpriteMaterial( { map: map, color: 0xffffff, fog: true } );
+        var sprite = new THREE.Sprite(material);
+        scene.add(sprite);
 
         renderer.setClearColor( 0xdddddd, 1);
 
-        renderer.render( scene, camera );
+        var render = function () {
+            requestAnimationFrame( render );
+
+            mesh.position.x += 1;
+            mesh.rotation.x += 0.1;
+
+            renderer.render(scene, camera);
+        };
+
+        render();
         
     }
 
